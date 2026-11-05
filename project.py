@@ -1,1 +1,9 @@
-
+print("=" * 55)
+print("           PYTHON PROJECT - 13")
+print("  STUDENT ATTENDANCE MANAGEMENT SYSTEM")
+print("=" * 55)
+print("  Project: Student Attendance Management")
+print("  Attendance Threshold: 75%")
+print("  Language: Python")
+print("=" * 55)
+print()
