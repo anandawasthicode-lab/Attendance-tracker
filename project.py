@@ -32,3 +32,15 @@ def count_present(marks):
     if marks[0] == "P":
         return 1 + count_present(marks[1:])
     return count_present(marks[1:])
+# Calculate attendance percentage.
+def attendance_percentage(marks):
+    """
+    >>> attendance_percentage(["P", "A", "P"])
+    66.66666666666666
+    """
+    recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
+
+    if recorded_days == 0:
+        return 0.0
+
+    return count_present(marks) / recorded_days * 100
