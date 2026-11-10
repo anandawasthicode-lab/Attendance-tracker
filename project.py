@@ -44,3 +44,26 @@ def attendance_percentage(marks):
         return 0.0
 
     return count_present(marks) / recorded_days * 100
+    #Load attendance data from a text file.
+def load_data():
+    attendance = {}
+    try:
+        with open(FILE_NAME, "r") as file:
+            for line in file:
+                line = line.strip()
+                if not line or "|" not in line:
+                    continue
+
+                name, data = line.split("|", 1)
+                name = clean_name(name)
+                marks = data.split(",") if data else []
+
+                if name and all(mark in ("P", "A", "-") for mark in marks):
+                    attendance[name] = marks
+
+    except FileNotFoundError:
+        print("No saved file found. Starting with empty data.")
+    except (OSError, UnicodeError) as error:
+        print("Could not read the attendance file:", error)
+
+    return attendance
