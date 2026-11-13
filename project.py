@@ -44,7 +44,7 @@ def attendance_percentage(marks):
         return 0.0
 
     return count_present(marks) / recorded_days * 100
-    #Load attendance data from a text file.
+#Load attendance data from a text file.
 def load_data():
     attendance = {}
     try:
