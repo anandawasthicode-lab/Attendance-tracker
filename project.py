@@ -96,3 +96,20 @@ def get_day_number():
         if value.isdigit() and int(value) > 0:
             return int(value)
         print("Enter a valid positive day number.")
+
+
+# Add a new student.
+def add_student(attendance):
+    name = clean_name(get_text("Enter student name: "))
+
+    if "|" in name or "," in name or "\n" in name:
+        print("Name cannot contain | or , characters.")
+    elif name in attendance:
+        print("Student already exists.")
+    else:
+        total_days = max(
+            (len(marks) for marks in attendance.values()),
+            default=0
+        )
+        attendance[name] = ["-"] * total_days
+        print(name, "added successfully.")
