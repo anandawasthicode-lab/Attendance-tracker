@@ -67,3 +67,15 @@ def load_data():
         print("Could not read the attendance file:", error)
 
     return attendance
+
+# Save all attendance records to a text file.
+def save_data(attendance):
+    try:
+        with open(FILE_NAME, "w") as file:
+            for name in sorted(attendance):
+                file.write(name + "|" + ",".join(attendance[name]) + "\n")
+        print("Attendance saved successfully.")
+        return True
+    except (OSError, UnicodeError) as error:
+        print("Could not save attendance:", error)
+        return False
