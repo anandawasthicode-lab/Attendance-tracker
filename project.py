@@ -79,3 +79,20 @@ def save_data(attendance):
     except (OSError, UnicodeError) as error:
         print("Could not save attendance:", error)
         return False
+
+# Read a non-empty value from the user.
+def get_text(message):
+    while True:
+        value = input(message).strip()
+        if value:
+            return value
+        print("Input cannot be empty. Please try again.")
+
+
+# Read a positive day number.
+def get_day_number():
+    while True:
+        value = input("Enter day number: ").strip()
+        if value.isdigit() and int(value) > 0:
+            return int(value)
+        print("Enter a valid positive day number.")
