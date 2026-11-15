@@ -151,3 +151,24 @@ def show_register(attendance):
             else:
                 print("-".rjust(5), end="")
         print()
+# Print the register using nested loops.
+def show_register(attendance):
+    if not attendance:
+        print("No student records available.")
+        return
+
+    days = tuple(range(1, max(len(m) for m in attendance.values()) + 1))
+
+    print("\nStudent".ljust(22), end="")
+    for day in days:
+        print(("D" + str(day)).rjust(5), end="")
+    print()
+
+    for name in sorted(attendance):
+        print(name.ljust(22), end="")
+        for day in days:
+            if day <= len(attendance[name]):
+                print(attendance[name][day - 1].rjust(5), end="")
+            else:
+                print("-".rjust(5), end="")
+        print()
