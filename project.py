@@ -97,7 +97,6 @@ def get_day_number():
             return int(value)
         print("Enter a valid positive day number.")
 
-
 # Add a new student.
 def add_student(attendance):
     name = clean_name(get_text("Enter student name: "))
@@ -113,3 +112,21 @@ def add_student(attendance):
         )
         attendance[name] = ["-"] * total_days
         print(name, "added successfully.")
+        
+# Mark attendance for one day.
+def mark_attendance(attendance):
+    if not attendance:
+        print("Add students first.")
+        return
+
+    day = max((len(marks) for marks in attendance.values()), default=0) + 1
+
+    for name in sorted(attendance):
+        while True:
+            mark = input(name + " (P/A): ").strip().upper()
+            if mark in ("P", "A"):
+                attendance[name].append(mark)
+                break
+            print("Invalid entry. Enter P or A.")
+
+    print("Attendance marked for Day", day)        
