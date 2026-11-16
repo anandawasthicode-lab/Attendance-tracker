@@ -176,7 +176,13 @@ def show_shortage(attendance):
         if recorded_days > 0:
             percentage = attendance_percentage(marks)
             if percentage < THRESHOLD:
-                
+                print(f"{name}: {percentage:.2f}%")
+                found = True
+
+    if not found:
+        print("No students have attendance below 75%.")
+
+
 # Display absentees on a selected day using a set.
 def show_absentees(attendance):
     if not attendance:
@@ -193,3 +199,4 @@ def show_absentees(attendance):
         print("Absent on Day", day, ":", ", ".join(sorted(absentees)))
     else:
         print("No absentees recorded for that day.")
+
