@@ -152,3 +152,16 @@ def show_register(attendance):
                 print("-".rjust(5), end="")
         print()
 
+# Display each student's attendance percentage.
+def show_percentages(attendance):
+    if not attendance:
+        print("No student records available.")
+        return
+
+    for name in sorted(attendance):
+        marks = attendance[name]
+        percentage = attendance_percentage(marks)
+        recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
+        print(f"{name:22} {percentage:7.2f}% "
+              f"({count_present(marks)}/{recorded_days} days)")
+
