@@ -165,3 +165,19 @@ def show_percentages(attendance):
         print(f"{name:22} {percentage:7.2f}% "
               f"({count_present(marks)}/{recorded_days} days)")
 
+# Find students below the attendance threshold.
+def show_shortage(attendance):
+    found = False
+
+    for name in sorted(attendance):
+        marks = attendance[name]
+        recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
+
+        if recorded_days > 0:
+            percentage = attendance_percentage(marks)
+            if percentage < THRESHOLD:
+                print(f"{name}: {percentage:.2f}%")
+                found = True
+
+    if not found:
+        print("No students have attendance below 75%.")
