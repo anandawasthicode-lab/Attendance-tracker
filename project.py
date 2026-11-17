@@ -200,3 +200,12 @@ def show_absentees(attendance):
     else:
         print("No absentees recorded for that day.")
 
+# Display the list of registered students.
+def show_students(attendance):
+    students = sorted(attendance.keys())
+
+    if not students:
+        print("No students registered.")
+        return
+
+    print("Students:", ", ".join(students))
