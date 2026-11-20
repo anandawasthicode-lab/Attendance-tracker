@@ -1,209 +1,331 @@
+
 print("=" * 55)
 print("           PYTHON PROJECT - 13")
-print("  STUDENT ATTENDANCE MANAGEMENT SYSTEM")
+print("     STUDENT ATTENDANCE MANAGEMENT SYSTEM")
 print("=" * 55)
 print("  Project: Student Attendance Management")
 print("  Attendance Threshold: 75%")
 print("  Language: Python")
 print("=" * 55)
-print()
 
-import doctest
 
 FILE_NAME = "attendance.txt"
-THRESHOLD = 75.0
+THRESHOLD = 75
 
 
-# Clean and validate a student's name.
+# Clean and format student name
 def clean_name(name):
-    """
-    >>> clean_name("  anand awasthi  ")
-    'Anand Awasthi'
-    """
-    return " ".join(name.strip().split()).title()
-# Count present days using recursion.
+    name = name.strip()
+    name = name.title()
+    return name
+
+
+# Count present days
 def count_present(marks):
     count = 0
 
     for mark in marks:
         if mark == "P":
-            count += 1
+            count = count + 1
 
     return count
-# Calculate attendance percentage.
+
+
+# Count recorded days
+def count_recorded(marks):
+    count = 0
+
+    for mark in marks:
+        if mark == "P" or mark == "A":
+            count = count + 1
+
+    return count
+
+
+# Calculate attendance percentage
 def attendance_percentage(marks):
-    """
-    >>> attendance_percentage(["P", "A", "P"])
-    66.66666666666666
-    """
-    recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
+    present = count_present(marks)
+    total = count_recorded(marks)
 
-    if recorded_days == 0:
-        return 0.0
+    if total == 0:
+        return 0
 
-    return count_present(marks) / recorded_days * 100
-#Load attendance data from a text file.
+    percentage = (present / total) * 100
+    return percentage
+
+
+# Load attendance from file
 def load_data():
     attendance = {}
+
     try:
-        with open(FILE_NAME, "r") as file:
-            for line in file:
-                line = line.strip()
-                if not line or "|" not in line:
-                    continue
+        file = open(FILE_NAME, "r")
 
-                name, data = line.split("|", 1)
-                name = clean_name(name)
-                marks = data.split(",") if data else []
+        for line in file:
+            line = line.strip()
 
-                if name and all(mark in ("P", "A", "-") for mark in marks):
+            if "|" in line:
+                parts = line.split("|")
+
+                name = clean_name(parts[0])
+                marks = parts[1].split(",")
+
+                if name:
                     attendance[name] = marks
+
+        file.close()
 
     except FileNotFoundError:
         print("No saved file found. Starting with empty data.")
-    except (OSError, UnicodeError) as error:
-        print("Could not read the attendance file:", error)
 
     return attendance
 
-# Save all attendance records to a text file.
+
+# Save attendance to file
 def save_data(attendance):
     try:
-        with open(FILE_NAME, "w") as file:
-            for name in sorted(attendance):
-                file.write(name + "|" + ",".join(attendance[name]) + "\n")
+        file = open(FILE_NAME, "w")
+
+        for name in sorted(attendance):
+            marks = attendance[name]
+
+            data = ",".join(marks)
+
+            file.write(name + "|" + data + "\n")
+
+        file.close()
+
         print("Attendance saved successfully.")
-        return True
-    except (OSError, UnicodeError) as error:
-        print("Could not save attendance:", error)
-        return False
 
-# Read a non-empty value from the user.
-def get_text(message):
-    while True:
-        value = input(message).strip()
-        if value:
-            return value
-        print("Input cannot be empty. Please try again.")
+    except OSError:
+        print("Unable to save attendance.")
 
 
-# Read a positive day number.
-def get_day_number():
-    while True:
-        value = input("Enter day number: ").strip()
-        if value.isdigit() and int(value) > 0:
-            return int(value)
-        print("Enter a valid positive day number.")
-
-# Add a new student.
+# Add a new student
 def add_student(attendance):
-    name = clean_name(get_text("Enter student name: "))
+    name = input("Enter student name: ")
+    name = clean_name(name)
 
-    if "|" in name or "," in name or "\n" in name:
+    if name == "":
+        print("Name cannot be empty.")
+
+    elif "|" in name or "," in name:
         print("Name cannot contain | or , characters.")
+
     elif name in attendance:
         print("Student already exists.")
+
     else:
-        total_days = max(
-            (len(marks) for marks in attendance.values()),
-            default=0
-        )
-        attendance[name] = ["-"] * total_days
+        total_days = 0
+
+        for marks in attendance.values():
+            if len(marks) > total_days:
+                total_days = len(marks)
+
+        attendance[name] = []
+
+        for i in range(total_days):
+            attendance[name].append("-")
+
         print(name, "added successfully.")
-        
-# Mark attendance for one day.
+
+
+# Mark attendance
 def mark_attendance(attendance):
-    if not attendance:
-        print("Add students first.")
+    if len(attendance) == 0:
+        print("Please add students first.")
         return
 
-    day = max((len(marks) for marks in attendance.values()), default=0) + 1
+    total_days = 0
+
+    for marks in attendance.values():
+        if len(marks) > total_days:
+            total_days = len(marks)
+
+    day = total_days + 1
 
     for name in sorted(attendance):
         while True:
-            mark = input(name + " (P/A): ").strip().upper()
-            if mark in ("P", "A"):
+            mark = input(name + " (P/A): ")
+            mark = mark.upper().strip()
+
+            if mark == "P" or mark == "A":
                 attendance[name].append(mark)
                 break
-            print("Invalid entry. Enter P or A.")
+
+            else:
+                print("Enter only P or A.")
 
     print("Attendance marked for Day", day)
-# Print the register using nested loops.
+
+
+# Display attendance register
 def show_register(attendance):
-    if not attendance:
+    if len(attendance) == 0:
         print("No student records available.")
         return
 
-    days = tuple(range(1, max(len(m) for m in attendance.values()) + 1))
+    total_days = 0
 
-    print("\nStudent".ljust(22), end="")
-    for day in days:
+    for marks in attendance.values():
+        if len(marks) > total_days:
+            total_days = len(marks)
+
+    print()
+    print("Student".ljust(22), end="")
+
+    for day in range(1, total_days + 1):
         print(("D" + str(day)).rjust(5), end="")
+
     print()
 
     for name in sorted(attendance):
         print(name.ljust(22), end="")
-        for day in days:
-            if day <= len(attendance[name]):
-                print(attendance[name][day - 1].rjust(5), end="")
+
+        marks = attendance[name]
+
+        for day in range(total_days):
+            if day < len(marks):
+                print(marks[day].rjust(5), end="")
             else:
                 print("-".rjust(5), end="")
+
         print()
 
-# Display each student's attendance percentage.
+
+# Show attendance percentages
 def show_percentages(attendance):
-    if not attendance:
+    if len(attendance) == 0:
         print("No student records available.")
         return
 
     for name in sorted(attendance):
         marks = attendance[name]
-        percentage = attendance_percentage(marks)
-        recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
-        print(f"{name:22} {percentage:7.2f}% "
-              f"({count_present(marks)}/{recorded_days} days)")
 
-# Find students below the attendance threshold.
+        present = count_present(marks)
+        total = count_recorded(marks)
+
+        percentage = attendance_percentage(marks)
+
+        print(name, ":", round(percentage, 2), "%")
+
+        print("Present:", present, "/", total)
+
+
+# Show students below 75 percent
 def show_shortage(attendance):
     found = False
 
     for name in sorted(attendance):
         marks = attendance[name]
-        recorded_days = sum(1 for mark in marks if mark in ("P", "A"))
 
-        if recorded_days > 0:
+        total = count_recorded(marks)
+
+        if total > 0:
             percentage = attendance_percentage(marks)
+
             if percentage < THRESHOLD:
-                print(f"{name}: {percentage:.2f}%")
+                print(name, ":", round(percentage, 2), "%")
                 found = True
 
-    if not found:
+    if found == False:
         print("No students have attendance below 75%.")
 
 
-# Display absentees on a selected day using a set.
+# Show absent students for a particular day
 def show_absentees(attendance):
-    if not attendance:
+    if len(attendance) == 0:
         print("No student records available.")
         return
 
-    day = get_day_number()
-    absentees = {
-        name for name, marks in attendance.items()
-        if len(marks) >= day and marks[day - 1] == "A"
-    }
+    day = input("Enter day number: ")
 
-    if absentees:
-        print("Absent on Day", day, ":", ", ".join(sorted(absentees)))
+    if day.isdigit() == False or int(day) <= 0:
+        print("Enter a valid day number.")
+        return
+
+    day = int(day)
+
+    absentees = set()
+
+    for name in attendance:
+        marks = attendance[name]
+
+        if len(marks) >= day:
+            if marks[day - 1] == "A":
+                absentees.add(name)
+
+    if len(absentees) > 0:
+        print("Absent students on Day", day)
+
+        for name in sorted(absentees):
+            print(name)
+
     else:
         print("No absentees recorded for that day.")
 
-# Display the list of registered students.
-def show_students(attendance):
-    students = sorted(attendance.keys())
 
-    if not students:
+# Show all registered students
+def show_students(attendance):
+    if len(attendance) == 0:
         print("No students registered.")
         return
 
-    print("Students:", ", ".join(students))
+    print("\nRegistered Students:")
+
+    for name in sorted(attendance):
+        print(name)
+
+
+# Main menu
+def main():
+    attendance = load_data()
+
+    while True:
+        print("\n========== ATTENDANCE MANAGEMENT ==========")
+        print("1. Add Student")
+        print("2. Mark Attendance")
+        print("3. View Attendance Register")
+        print("4. Show Attendance Percentages")
+        print("5. Show Students Below 75%")
+        print("6. Show Absentees for a Day")
+        print("7. View All Students")
+        print("8. Save Attendance")
+        print("9. Exit")
+
+        choice = input("\nEnter your choice: ")
+
+        if choice == "1":
+            add_student(attendance)
+
+        elif choice == "2":
+            mark_attendance(attendance)
+
+        elif choice == "3":
+            show_register(attendance)
+
+        elif choice == "4":
+            show_percentages(attendance)
+
+        elif choice == "5":
+            show_shortage(attendance)
+
+        elif choice == "6":
+            show_absentees(attendance)
+
+        elif choice == "7":
+            show_students(attendance)
+
+        elif choice == "8":
+            save_data(attendance)
+
+        elif choice == "9":
+            save_data(attendance)
+            print("Thank you for using Attendance Management System.")
+            break
+
+        else:
+            print("Invalid choice. Please enter 1 to 9.")
+
+
+main()
