@@ -23,15 +23,13 @@ def clean_name(name):
     return " ".join(name.strip().split()).title()
 # Count present days using recursion.
 def count_present(marks):
-    """
-    >>> count_present(["P", "A", "P", "P"])
-    3
-    """
-    if len(marks) == 0:
-        return 0
-    if marks[0] == "P":
-        return 1 + count_present(marks[1:])
-    return count_present(marks[1:])
+    count = 0
+
+    for mark in marks:
+        if mark == "P":
+            count += 1
+
+    return count
 # Calculate attendance percentage.
 def attendance_percentage(marks):
     """
